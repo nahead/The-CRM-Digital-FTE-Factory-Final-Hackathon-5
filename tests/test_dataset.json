@@ -1,0 +1,519 @@
+{
+  "test_scenarios": {
+    "email_channel": [
+      {
+        "id": "email_001",
+        "scenario": "Simple product question",
+        "input": {
+          "from": "user1@example.com",
+          "subject": "How do I create a new project?",
+          "body": "Hi, I'm new to ProjectFlow and want to create my first project. Can you guide me through the steps?",
+          "channel": "email"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "response_tone": "formal",
+          "response_length": "detailed",
+          "includes_greeting": true,
+          "includes_signature": true,
+          "knowledge_base_used": true
+        }
+      },
+      {
+        "id": "email_002",
+        "scenario": "Angry customer - refund request",
+        "input": {
+          "from": "angry@example.com",
+          "subject": "I WANT MY MONEY BACK",
+          "body": "This is terrible service! I've been waiting 3 days for support. I want a full refund immediately or I'm taking legal action!",
+          "channel": "email"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "escalation_reason": "refund_request + negative_sentiment",
+          "sentiment_score": "<0.3",
+          "priority": "urgent",
+          "response_tone": "empathetic"
+        }
+      },
+      {
+        "id": "email_003",
+        "scenario": "Technical bug report",
+        "input": {
+          "from": "developer@company.com",
+          "subject": "Bug: Tasks not saving",
+          "body": "When I try to save a task with special characters in the title, I get an error. Steps to reproduce: 1. Create task 2. Add title with & symbol 3. Click save. Error: 500 Internal Server Error",
+          "channel": "email"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "response_includes": "ticket_id",
+          "action": "create_bug_ticket",
+          "category": "technical"
+        }
+      },
+      {
+        "id": "email_004",
+        "scenario": "Pricing negotiation",
+        "input": {
+          "from": "cfo@bigcorp.com",
+          "subject": "Enterprise pricing for 500 users",
+          "body": "We're interested in ProjectFlow for our 500-person team. Can you provide custom pricing and volume discounts?",
+          "channel": "email"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "escalation_reason": "pricing_negotiation",
+          "suggested_team": "sales"
+        }
+      },
+      {
+        "id": "email_005",
+        "scenario": "Security incident",
+        "input": {
+          "from": "security@client.com",
+          "subject": "URGENT: Unauthorized access detected",
+          "body": "We detected login attempts from unknown IP addresses on our team account. Please lock the account immediately.",
+          "channel": "email"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "escalation_reason": "security_incident",
+          "priority": "urgent",
+          "suggested_team": "security"
+        }
+      },
+      {
+        "id": "email_006",
+        "scenario": "Feature request",
+        "input": {
+          "from": "pm@startup.com",
+          "subject": "Feature Request: Gantt charts",
+          "body": "Would love to see Gantt chart visualization for project timelines. Is this on your roadmap?",
+          "channel": "email"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "action": "log_feature_request",
+          "response_includes": "feedback_acknowledgment"
+        }
+      },
+      {
+        "id": "email_007",
+        "scenario": "Account access issue",
+        "input": {
+          "from": "locked@example.com",
+          "subject": "Can't login to my account",
+          "body": "I've tried resetting my password 3 times but still can't login. The reset link doesn't work.",
+          "channel": "email"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "escalation_reason": "account_access_issue",
+          "priority": "high"
+        }
+      },
+      {
+        "id": "email_008",
+        "scenario": "Positive feedback",
+        "input": {
+          "from": "happy@example.com",
+          "subject": "Love ProjectFlow!",
+          "body": "Just wanted to say your product is amazing. The task automation feature saved us 10 hours this week. Keep up the great work!",
+          "channel": "email"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "sentiment_score": ">0.8",
+          "action": "log_feedback",
+          "response_tone": "grateful"
+        }
+      }
+    ],
+    "whatsapp_channel": [
+      {
+        "id": "whatsapp_001",
+        "scenario": "Quick question",
+        "input": {
+          "from": "+1234567890",
+          "message": "How do I invite team members?",
+          "channel": "whatsapp"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "response_length": "<300 chars",
+          "response_tone": "conversational",
+          "includes_greeting": true,
+          "no_formal_signature": true
+        }
+      },
+      {
+        "id": "whatsapp_002",
+        "scenario": "Frustrated customer",
+        "input": {
+          "from": "+9876543210",
+          "message": "This is so frustrating! Nothing works!",
+          "channel": "whatsapp"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "sentiment_score": "<0.3",
+          "response_tone": "empathetic",
+          "priority": "high"
+        }
+      },
+      {
+        "id": "whatsapp_003",
+        "scenario": "Multi-message conversation",
+        "input": {
+          "from": "+1122334455",
+          "messages": [
+            "Hi",
+            "I have a question",
+            "About task templates",
+            "How do I create one?"
+          ],
+          "channel": "whatsapp"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "context_management": "combine_messages",
+          "response_after": "last_message"
+        }
+      },
+      {
+        "id": "whatsapp_004",
+        "scenario": "Status check",
+        "input": {
+          "from": "+5544332211",
+          "message": "What's the status of my ticket #abc123?",
+          "channel": "whatsapp"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "action": "lookup_ticket",
+          "response_includes": "ticket_status"
+        }
+      },
+      {
+        "id": "whatsapp_005",
+        "scenario": "Urgent issue",
+        "input": {
+          "from": "+9988776655",
+          "message": "URGENT! Our entire team is locked out!",
+          "channel": "whatsapp"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "priority": "urgent",
+          "response_time": "<30 seconds"
+        }
+      },
+      {
+        "id": "whatsapp_006",
+        "scenario": "Simple thanks",
+        "input": {
+          "from": "+1231231234",
+          "message": "Thanks! That worked perfectly",
+          "channel": "whatsapp"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "sentiment_score": ">0.7",
+          "action": "close_ticket",
+          "response_brief": true
+        }
+      },
+      {
+        "id": "whatsapp_007",
+        "scenario": "Billing question",
+        "input": {
+          "from": "+4564564567",
+          "message": "Why was I charged twice this month?",
+          "channel": "whatsapp"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "escalation_reason": "billing_dispute",
+          "suggested_team": "billing"
+        }
+      },
+      {
+        "id": "whatsapp_008",
+        "scenario": "Cross-channel continuation",
+        "input": {
+          "from": "+1234567890",
+          "message": "Following up on my email from yesterday about project creation",
+          "channel": "whatsapp",
+          "previous_channel": "email"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "customer_identification": "link_to_email",
+          "context_retrieval": "previous_conversation",
+          "response_references": "previous_interaction"
+        }
+      }
+    ],
+    "web_form_channel": [
+      {
+        "id": "web_001",
+        "scenario": "Standard support request",
+        "input": {
+          "name": "John Doe",
+          "email": "john@example.com",
+          "subject": "How to export data?",
+          "category": "Technical Support",
+          "priority": "Medium",
+          "message": "I need to export all my project data to CSV. Where is this option?",
+          "channel": "web_form"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "response_includes": "ticket_id",
+          "response_tone": "semi-formal",
+          "knowledge_base_used": true
+        }
+      },
+      {
+        "id": "web_002",
+        "scenario": "High priority technical issue",
+        "input": {
+          "name": "Sarah Tech",
+          "email": "sarah@company.com",
+          "subject": "Production system down",
+          "category": "Technical Support",
+          "priority": "High",
+          "message": "Our production instance is not loading. All 50 team members are blocked. This is critical!",
+          "channel": "web_form"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "priority": "urgent",
+          "escalation_reason": "critical_technical_issue",
+          "response_time": "<60 seconds"
+        }
+      },
+      {
+        "id": "web_003",
+        "scenario": "General inquiry",
+        "input": {
+          "name": "Mike Curious",
+          "email": "mike@startup.com",
+          "subject": "Product capabilities",
+          "category": "General Inquiry",
+          "priority": "Low",
+          "message": "Does ProjectFlow support integration with Slack and GitHub?",
+          "channel": "web_form"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "response_includes": "integration_info",
+          "category": "general"
+        }
+      },
+      {
+        "id": "web_004",
+        "scenario": "Billing inquiry",
+        "input": {
+          "name": "Finance Team",
+          "email": "finance@bigcorp.com",
+          "subject": "Invoice request",
+          "category": "Billing",
+          "priority": "Medium",
+          "message": "We need invoices for the last 6 months for our accounting department.",
+          "channel": "web_form"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "escalation_reason": "billing_request",
+          "suggested_team": "billing"
+        }
+      },
+      {
+        "id": "web_005",
+        "scenario": "Feature feedback",
+        "input": {
+          "name": "Product Manager",
+          "email": "pm@tech.com",
+          "subject": "Feedback on new UI",
+          "category": "Feedback",
+          "priority": "Low",
+          "message": "The new dashboard UI is much cleaner! One suggestion: add dark mode option.",
+          "channel": "web_form"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "action": "log_feedback",
+          "sentiment_score": ">0.6",
+          "response_includes": "thank_you"
+        }
+      },
+      {
+        "id": "web_006",
+        "scenario": "Spam/abuse",
+        "input": {
+          "name": "Spammer",
+          "email": "spam@spam.com",
+          "subject": "BUY CHEAP PRODUCTS NOW!!!",
+          "category": "General Inquiry",
+          "priority": "Low",
+          "message": "Click here for amazing deals! www.spam.com",
+          "channel": "web_form"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "escalation_reason": "potential_spam",
+          "action": "flag_for_review"
+        }
+      },
+      {
+        "id": "web_007",
+        "scenario": "Complex technical question",
+        "input": {
+          "name": "Developer",
+          "email": "dev@company.com",
+          "subject": "API rate limits",
+          "category": "Technical Support",
+          "priority": "Medium",
+          "message": "What are the API rate limits for the Enterprise plan? We're building an integration that will make ~1000 requests per hour.",
+          "channel": "web_form"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "knowledge_base_used": true,
+          "response_includes": "api_documentation_link"
+        }
+      },
+      {
+        "id": "web_008",
+        "scenario": "Legal/compliance question",
+        "input": {
+          "name": "Legal Counsel",
+          "email": "legal@enterprise.com",
+          "subject": "GDPR compliance",
+          "category": "General Inquiry",
+          "priority": "High",
+          "message": "We need documentation on how ProjectFlow handles GDPR data deletion requests.",
+          "channel": "web_form"
+        },
+        "expected_behavior": {
+          "should_escalate": true,
+          "escalation_reason": "legal_compliance",
+          "suggested_team": "legal",
+          "priority": "high"
+        }
+      }
+    ],
+    "edge_cases": [
+      {
+        "id": "edge_001",
+        "scenario": "Empty message",
+        "input": {
+          "channel": "email",
+          "from": "test@example.com",
+          "subject": "Question",
+          "body": ""
+        },
+        "expected_behavior": {
+          "error_handling": "request_clarification",
+          "should_create_ticket": false
+        }
+      },
+      {
+        "id": "edge_002",
+        "scenario": "Very long message (>5000 chars)",
+        "input": {
+          "channel": "email",
+          "from": "verbose@example.com",
+          "body": "[5000+ character message]"
+        },
+        "expected_behavior": {
+          "should_escalate": false,
+          "response_handling": "summarize_key_points",
+          "knowledge_base_search": "extract_main_question"
+        }
+      },
+      {
+        "id": "edge_003",
+        "scenario": "Multiple questions in one message",
+        "input": {
+          "channel": "email",
+          "from": "multi@example.com",
+          "body": "1. How do I add users? 2. What's the pricing? 3. Can I export data? 4. Do you have an API?"
+        },
+        "expected_behavior": {
+          "response_structure": "numbered_answers",
+          "escalate_if": "contains_pricing_question"
+        }
+      },
+      {
+        "id": "edge_004",
+        "scenario": "Non-English message",
+        "input": {
+          "channel": "whatsapp",
+          "from": "+1234567890",
+          "message": "Hola, como puedo crear un proyecto?"
+        },
+        "expected_behavior": {
+          "language_detection": true,
+          "response_language": "match_input",
+          "fallback": "english_with_apology"
+        }
+      },
+      {
+        "id": "edge_005",
+        "scenario": "Customer switches sentiment mid-conversation",
+        "input": {
+          "channel": "email",
+          "conversation": [
+            {"message": "This is terrible!", "sentiment": -0.8},
+            {"message": "Oh wait, I figured it out. Thanks!", "sentiment": 0.9}
+          ]
+        },
+        "expected_behavior": {
+          "sentiment_tracking": "use_latest",
+          "should_escalate": false,
+          "action": "close_ticket"
+        }
+      },
+      {
+        "id": "edge_006",
+        "scenario": "Duplicate submission",
+        "input": {
+          "channel": "web_form",
+          "email": "impatient@example.com",
+          "subject": "Same question",
+          "submitted_twice": "within_5_minutes"
+        },
+        "expected_behavior": {
+          "duplicate_detection": true,
+          "action": "link_to_existing_ticket",
+          "response": "reference_original_ticket"
+        }
+      }
+    ]
+  },
+  "test_metrics": {
+    "total_scenarios": 30,
+    "by_channel": {
+      "email": 8,
+      "whatsapp": 8,
+      "web_form": 8,
+      "edge_cases": 6
+    },
+    "by_expected_outcome": {
+      "handle_without_escalation": 17,
+      "escalate_to_human": 11,
+      "error_handling": 2
+    },
+    "coverage": {
+      "sentiment_analysis": "100%",
+      "channel_adaptation": "100%",
+      "customer_identification": "100%",
+      "knowledge_retrieval": "80%",
+      "escalation_logic": "100%",
+      "error_handling": "30%"
+    }
+  }
+}

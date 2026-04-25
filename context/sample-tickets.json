@@ -1,0 +1,196 @@
+[
+  {
+    "id": 1,
+    "channel": "email",
+    "customer_email": "john@startup.com",
+    "subject": "How do I integrate with Slack?",
+    "message": "Hi, I just signed up for ProjectFlow and want to connect it with our Slack workspace. Can you guide me through the process?",
+    "category": "technical",
+    "priority": "medium",
+    "expected_response": "integration_guide"
+  },
+  {
+    "id": 2,
+    "channel": "whatsapp",
+    "customer_phone": "+1234567890",
+    "message": "App not syncing! Need help ASAP",
+    "category": "technical",
+    "priority": "high",
+    "expected_response": "troubleshooting"
+  },
+  {
+    "id": 3,
+    "channel": "web_form",
+    "customer_email": "sarah@agency.com",
+    "subject": "Password reset not working",
+    "message": "I've tried resetting my password 3 times but I'm not receiving the email. I checked spam folder too. Please help!",
+    "category": "account",
+    "priority": "high",
+    "expected_response": "account_support"
+  },
+  {
+    "id": 4,
+    "channel": "email",
+    "customer_email": "mike@techco.com",
+    "subject": "Pricing question for Enterprise plan",
+    "message": "We're a team of 200 people. What would be the pricing for Enterprise plan? Do you offer volume discounts?",
+    "category": "pricing",
+    "priority": "medium",
+    "expected_response": "escalate_to_sales"
+  },
+  {
+    "id": 5,
+    "channel": "whatsapp",
+    "customer_phone": "+9876543210",
+    "message": "How to add subtasks?",
+    "category": "general",
+    "priority": "low",
+    "expected_response": "feature_guide"
+  },
+  {
+    "id": 6,
+    "channel": "email",
+    "customer_email": "angry@customer.com",
+    "subject": "This is UNACCEPTABLE!",
+    "message": "I've been trying to upload files for 2 HOURS and it keeps failing! This is ridiculous. I want a REFUND immediately or I'm canceling and telling everyone how terrible your service is!",
+    "category": "complaint",
+    "priority": "urgent",
+    "expected_response": "escalate_to_human"
+  },
+  {
+    "id": 7,
+    "channel": "web_form",
+    "customer_email": "dev@startup.io",
+    "subject": "API rate limit question",
+    "message": "What are the API rate limits for the Professional plan? I need to make about 5000 requests per hour.",
+    "category": "technical",
+    "priority": "medium",
+    "expected_response": "api_documentation"
+  },
+  {
+    "id": 8,
+    "channel": "whatsapp",
+    "customer_phone": "+1122334455",
+    "message": "Can I export my data?",
+    "category": "general",
+    "priority": "low",
+    "expected_response": "feature_guide"
+  },
+  {
+    "id": 9,
+    "channel": "email",
+    "customer_email": "legal@bigcorp.com",
+    "subject": "Data privacy and GDPR compliance",
+    "message": "We need documentation on your GDPR compliance and data processing agreements before we can proceed with the Enterprise plan.",
+    "category": "legal",
+    "priority": "high",
+    "expected_response": "escalate_to_legal"
+  },
+  {
+    "id": 10,
+    "channel": "web_form",
+    "customer_email": "newuser@company.com",
+    "subject": "Getting started help",
+    "message": "I just signed up and I'm not sure where to start. How do I create my first project?",
+    "category": "onboarding",
+    "priority": "medium",
+    "expected_response": "onboarding_guide"
+  },
+  {
+    "id": 11,
+    "channel": "email",
+    "customer_email": "pm@agency.com",
+    "subject": "GitHub integration not working",
+    "message": "I connected GitHub but my commits aren't showing up in tasks. I'm using the #TASK-123 format in commit messages.",
+    "category": "technical",
+    "priority": "medium",
+    "expected_response": "troubleshooting"
+  },
+  {
+    "id": 12,
+    "channel": "whatsapp",
+    "customer_phone": "+5544332211",
+    "message": "Need human support",
+    "category": "escalation",
+    "priority": "medium",
+    "expected_response": "escalate_to_human"
+  },
+  {
+    "id": 13,
+    "channel": "web_form",
+    "customer_email": "billing@startup.com",
+    "subject": "Downgrade to Starter plan",
+    "message": "We want to downgrade from Professional to Starter plan. Will we lose any data? When will the change take effect?",
+    "category": "billing",
+    "priority": "medium",
+    "expected_response": "billing_support"
+  },
+  {
+    "id": 14,
+    "channel": "email",
+    "customer_email": "user@company.com",
+    "subject": "Feature request: Dark mode",
+    "message": "Love the product! Would be great to have a dark mode option for the web app. Any plans for this?",
+    "category": "feedback",
+    "priority": "low",
+    "expected_response": "feedback_acknowledgment"
+  },
+  {
+    "id": 15,
+    "channel": "whatsapp",
+    "customer_phone": "+9988776655",
+    "message": "How much does it cost?",
+    "category": "pricing",
+    "priority": "low",
+    "expected_response": "escalate_to_sales"
+  },
+  {
+    "id": 16,
+    "channel": "email",
+    "customer_email": "admin@enterprise.com",
+    "subject": "SSO setup assistance needed",
+    "message": "We're on the Enterprise plan and need help setting up SAML SSO with our Okta instance. Can someone from your team assist?",
+    "category": "technical",
+    "priority": "high",
+    "expected_response": "escalate_to_technical"
+  },
+  {
+    "id": 17,
+    "channel": "web_form",
+    "customer_email": "mobile@user.com",
+    "subject": "iOS app crashing on iPad",
+    "message": "The iOS app keeps crashing when I try to open projects on my iPad Pro. iPhone works fine. iOS 17.2.",
+    "category": "bug",
+    "priority": "high",
+    "expected_response": "bug_report_acknowledgment"
+  },
+  {
+    "id": 18,
+    "channel": "whatsapp",
+    "customer_phone": "+1231231234",
+    "message": "Thx for the help earlier! Works now 👍",
+    "category": "feedback",
+    "priority": "low",
+    "expected_response": "positive_acknowledgment"
+  },
+  {
+    "id": 19,
+    "channel": "email",
+    "customer_email": "security@corp.com",
+    "subject": "Security audit documentation",
+    "message": "We need your SOC 2 report and penetration test results for our security review. Can you provide these?",
+    "category": "legal",
+    "priority": "high",
+    "expected_response": "escalate_to_security"
+  },
+  {
+    "id": 20,
+    "channel": "web_form",
+    "customer_email": "confused@user.com",
+    "subject": "Can't find the export button",
+    "message": "The documentation says there's an export button in the project menu but I don't see it. Am I missing something?",
+    "category": "general",
+    "priority": "low",
+    "expected_response": "feature_guide"
+  }
+]

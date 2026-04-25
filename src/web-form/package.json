@@ -1,0 +1,25 @@
+{
+  "name": "customer-support-form",
+  "version": "1.0.0",
+  "description": "Customer Support Web Form for TechCorp FTE",
+  "main": "index.js",
+  "scripts": {
+    "dev": "next dev -p 3000",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint"
+  },
+  "keywords": ["support", "form", "react", "nextjs"],
+  "author": "TechCorp",
+  "license": "MIT",
+  "dependencies": {
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "next": "^14.0.0"
+  },
+  "devDependencies": {
+    "tailwindcss": "^3.4.0",
+    "postcss": "^8.4.32",
+    "autoprefixer": "^10.4.16"
+  }
+}
