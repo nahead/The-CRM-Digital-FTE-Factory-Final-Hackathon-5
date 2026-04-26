@@ -1,0 +1,19 @@
+# Render.com Deployment Configuration
+# This file tells Render how to build and run the application
+
+# Build settings
+build:
+  command: pip install -r requirements.txt
+
+# Start command
+start:
+  command: cd src && uvicorn api.main:app --host 0.0.0.0 --port $PORT
+
+# Python version
+python:
+  version: "3.11.0"
+
+# Environment
+env:
+  - key: PYTHON_VERSION
+    value: "3.11.0"
