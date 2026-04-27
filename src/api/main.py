@@ -399,19 +399,19 @@ async def process_email_message(email_data: dict):
         # Create conversation and ticket
         db_pool = await get_db_pool()
         async with db_pool.acquire() as conn:
-            # Create conversation
+            # Create conversation - convert customer_id to UUID
             conversation_id = await conn.fetchval("""
                 INSERT INTO conversations (customer_id, initial_channel, started_at, status)
                 VALUES ($1, 'email', NOW(), 'active')
                 RETURNING id
-            """, customer_id)
+            """, uuid.UUID(customer_id) if isinstance(customer_id, str) else customer_id)
 
-            # Create ticket
+            # Create ticket - ensure customer_id is UUID
             ticket_id = uuid.uuid4()
             await conn.execute("""
                 INSERT INTO tickets (id, customer_id, conversation_id, subject, status, priority, source_channel, category, created_at)
                 VALUES ($1, $2, $3, $4, 'open', 'medium', 'email', 'general', NOW())
-            """, ticket_id, customer_id, conversation_id, subject)
+            """, ticket_id, uuid.UUID(customer_id) if isinstance(customer_id, str) else customer_id, conversation_id, subject)
 
             # Store customer's email message
             await conn.execute("""
@@ -871,6 +871,33 @@ async def escalate_ticket(ticket_id: str):
     except Exception as e:
         print(f"Escalation error: {e}")
         raise HTTPException(status_code=500, detail="Failed to escalate ticket")
+
+
+@app.post("/test/email/send-direct")
+async def test_email_send_direct(to_email: str, test_message: str = "Test email from backend"):
+    """Test email sending directly - for debugging"""
+    try:
+        if not email_handler:
+            return {"status": "error", "message": "Email handler not initialized"}
+
+        result = email_handler.send_email(
+            to_email=to_email,
+            subject="Test Email - Backend Check",
+            body=f"{test_message}\n\nThis is a test email to verify Gmail API sending works.\n\nTimestamp: {datetime.utcnow().isoformat()}"
+        )
+
+        return {
+            "status": "success" if result.get('delivery_status') == 'sent' else "failed",
+            "result": result,
+            "message": "Email sent successfully" if result.get('delivery_status') == 'sent' else "Email sending failed"
+        }
+    except Exception as e:
+        import traceback
+        return {
+            "status": "error",
+            "message": str(e),
+            "traceback": traceback.format_exc()
+        }
 
 
 @app.get("/analytics")
