@@ -44,12 +44,35 @@ class EmailHandler:
 
         self.creds = None
         self.service = None
-        self._authenticate()
+
+        # Try to authenticate, but don't fail if credentials are missing
+        try:
+            self._authenticate()
+        except Exception as e:
+            print(f"Gmail authentication skipped: {e}")
+            print("Email notifications will not be sent, but responses will be stored in database")
 
     def _authenticate(self):
         """Authenticate with Gmail API using OAuth2"""
-        # Load token if exists
-        if os.path.exists(self.token_path):
+        # Try to load credentials from environment variable first (for Render.com)
+        gmail_creds_json = os.getenv('GMAIL_CREDENTIALS_JSON')
+        if gmail_creds_json:
+            import json
+            import tempfile
+            # Write credentials to temp file
+            with tempfile.NamedTemporaryFile(mode='w', suffix='.json', delete=False) as f:
+                f.write(gmail_creds_json)
+                temp_creds_path = f.name
+            self.credentials_path = temp_creds_path
+
+        # Try to load token from environment variable
+        gmail_token_base64 = os.getenv('GMAIL_TOKEN_BASE64')
+        if gmail_token_base64:
+            import base64
+            token_data = base64.b64decode(gmail_token_base64)
+            self.creds = pickle.loads(token_data)
+        # Load token from file if exists
+        elif os.path.exists(self.token_path):
             with open(self.token_path, 'rb') as token:
                 self.creds = pickle.load(token)
 
@@ -64,15 +87,18 @@ class EmailHandler:
                         "Download from Google Cloud Console."
                     )
 
+                # Note: This requires interactive authentication and won't work on Render
+                # You need to generate token locally and set GMAIL_TOKEN_BASE64 env var
                 flow = InstalledAppFlow.from_client_secrets_file(
                     self.credentials_path, SCOPES
                 )
                 self.creds = flow.run_local_server(port=0)
 
-            # Save token for future use
-            os.makedirs(os.path.dirname(self.token_path), exist_ok=True)
-            with open(self.token_path, 'wb') as token:
-                pickle.dump(self.creds, token)
+            # Save token for future use (only works locally)
+            if not gmail_token_base64:
+                os.makedirs(os.path.dirname(self.token_path), exist_ok=True)
+                with open(self.token_path, 'wb') as token:
+                    pickle.dump(self.creds, token)
 
         # Build Gmail service
         self.service = build('gmail', 'v1', credentials=self.creds)
