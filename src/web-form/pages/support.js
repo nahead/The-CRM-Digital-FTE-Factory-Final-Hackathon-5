@@ -24,7 +24,7 @@ export default function SupportPage() {
           </svg>
           <span>Back to Home</span>
         </button>
-        <SupportForm apiEndpoint="http://localhost:8001/support/submit" />
+        <SupportForm apiEndpoint="https://fte-backend-3ohm.onrender.com/support/submit" />
       </div>
     </>
   );

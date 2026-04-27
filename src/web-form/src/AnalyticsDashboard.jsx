@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function AnalyticsDashboard({ apiEndpoint = 'http://localhost:8001' }) {
+export default function AnalyticsDashboard({ apiEndpoint = 'https://fte-backend-3ohm.onrender.com' }) {
   const [timeRange, setTimeRange] = useState('7d'); // '24h', '7d', '30d', '90d'
   const [analytics, setAnalytics] = useState({
     responseTimeData: [],

@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export default function VoiceEnabledChat({ ticketId, apiEndpoint = 'http://localhost:8001' }) {
+export default function VoiceEnabledChat({ ticketId, apiEndpoint = 'https://fte-backend-3ohm.onrender.com' }) {
   const [messages, setMessages] = useState([]);
   const [isListening, setIsListening] = useState(false);
   const [isSpeaking, setIsSpeaking] = useState(false);

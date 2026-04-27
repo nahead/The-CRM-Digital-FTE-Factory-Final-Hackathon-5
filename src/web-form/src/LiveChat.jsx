@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from 'react';
 
-export default function LiveChat({ ticketId, apiEndpoint = 'http://localhost:8001' }) {
+export default function LiveChat({ ticketId, apiEndpoint = 'https://fte-backend-3ohm.onrender.com' }) {
   const [messages, setMessages] = useState([]);
   const [newMessage, setNewMessage] = useState('');
   const [isTyping, setIsTyping] = useState(false);

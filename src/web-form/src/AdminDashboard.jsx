@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-export default function AdminDashboard({ apiEndpoint = 'http://localhost:8001' }) {
+export default function AdminDashboard({ apiEndpoint = 'https://fte-backend-3ohm.onrender.com' }) {
   const [metrics, setMetrics] = useState({
     activeConversations: 0,
     totalTickets: 0,
