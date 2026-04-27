@@ -10,7 +10,7 @@ export default function App() {
   const [currentView, setCurrentView] = useState('home');
   const [ticketId, setTicketId] = useState(null);
 
-  const apiEndpoint = 'http://localhost:8001';
+  const apiEndpoint = process.env.NEXT_PUBLIC_API_URL || 'https://fte-backend-3ohm.onrender.com';
 
   const handleTicketCreated = (id) => {
     setTicketId(id);
