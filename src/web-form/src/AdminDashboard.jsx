@@ -1,4 +1,42 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Floating particles for background
+const FloatingParticles = () => {
+  const particles = Array.from({ length: 20 }, (_, i) => ({
+    id: i,
+    x: Math.random() * 100,
+    y: Math.random() * 100,
+    size: Math.random() * 4 + 2,
+    duration: Math.random() * 20 + 10
+  }));
+
+  return (
+    <div className="absolute inset-0 overflow-hidden pointer-events-none">
+      {particles.map(particle => (
+        <motion.div
+          key={particle.id}
+          className="absolute rounded-full bg-gradient-to-r from-blue-400/10 to-purple-400/10 blur-sm"
+          style={{
+            left: `${particle.x}%`,
+            top: `${particle.y}%`,
+            width: particle.size,
+            height: particle.size
+          }}
+          animate={{
+            y: [0, -30, 0],
+            opacity: [0.2, 0.4, 0.2]
+          }}
+          transition={{
+            duration: particle.duration,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      ))}
+    </div>
+  );
+};
 
 export default function AdminDashboard({ apiEndpoint = 'https://fte-backend-3ohm.onrender.com' }) {
   const [metrics, setMetrics] = useState({
@@ -12,7 +50,6 @@ export default function AdminDashboard({ apiEndpoint = 'https://fte-backend-3ohm
   const [loading, setLoading] = useState(true);
   const [lastUpdate, setLastUpdate] = useState(new Date());
 
-  // Fetch dashboard metrics
   const fetchMetrics = async () => {
     try {
       const response = await fetch(`${apiEndpoint}/admin/metrics`);
@@ -25,7 +62,6 @@ export default function AdminDashboard({ apiEndpoint = 'https://fte-backend-3ohm
     }
   };
 
-  // Fetch recent tickets
   const fetchRecentTickets = async () => {
     try {
       const response = await fetch(`${apiEndpoint}/admin/recent-tickets`);
@@ -38,7 +74,6 @@ export default function AdminDashboard({ apiEndpoint = 'https://fte-backend-3ohm
     }
   };
 
-  // Initial load
   useEffect(() => {
     const loadData = async () => {
       setLoading(true);
@@ -49,7 +84,6 @@ export default function AdminDashboard({ apiEndpoint = 'https://fte-backend-3ohm
 
     loadData();
 
-    // Auto-refresh every 5 seconds
     const interval = setInterval(() => {
       fetchMetrics();
       fetchRecentTickets();
@@ -61,12 +95,12 @@ export default function AdminDashboard({ apiEndpoint = 'https://fte-backend-3ohm
 
   const getStatusColor = (status) => {
     const colors = {
-      open: 'bg-blue-100 text-blue-800',
-      active: 'bg-green-100 text-green-800',
-      resolved: 'bg-gray-100 text-gray-800',
-      escalated: 'bg-red-100 text-red-800'
+      open: 'bg-blue-100 text-blue-800 border-blue-300',
+      active: 'bg-green-100 text-green-800 border-green-300',
+      resolved: 'bg-gray-100 text-gray-800 border-gray-300',
+      escalated: 'bg-red-100 text-red-800 border-red-300'
     };
-    return colors[status] || 'bg-gray-100 text-gray-800';
+    return colors[status] || 'bg-gray-100 text-gray-800 border-gray-300';
   };
 
   const getChannelIcon = (channel) => {
@@ -80,215 +114,307 @@ export default function AdminDashboard({ apiEndpoint = 'https://fte-backend-3ohm
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
-          <p className="text-gray-600">Loading dashboard...</p>
-        </div>
+      <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 flex items-center justify-center">
+        <FloatingParticles />
+        <motion.div
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          className="text-center relative z-10"
+        >
+          <motion.div
+            className="w-20 h-20 border-4 border-blue-600 border-t-transparent rounded-full mx-auto mb-6"
+            animate={{ rotate: 360 }}
+            transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          />
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.2 }}
+            className="text-xl font-semibold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent"
+          >
+            Loading Dashboard...
+          </motion.p>
+        </motion.div>
       </div>
     );
   }
 
+  const metricCards = [
+    {
+      title: 'Active Conversations',
+      value: metrics.activeConversations,
+      icon: '💬',
+      gradient: 'from-blue-500 to-cyan-500',
+      bgGradient: 'from-blue-50 to-cyan-50'
+    },
+    {
+      title: 'Total Tickets',
+      value: metrics.totalTickets,
+      icon: '🎫',
+      gradient: 'from-green-500 to-emerald-500',
+      bgGradient: 'from-green-50 to-emerald-50'
+    },
+    {
+      title: 'Avg Response Time',
+      value: `${metrics.avgResponseTime}s`,
+      icon: '⚡',
+      gradient: 'from-purple-500 to-pink-500',
+      bgGradient: 'from-purple-50 to-pink-50'
+    },
+    {
+      title: 'AI Success Rate',
+      value: '98%',
+      icon: '🎯',
+      gradient: 'from-yellow-500 to-amber-500',
+      bgGradient: 'from-yellow-50 to-amber-50'
+    }
+  ];
+
   return (
-    <div className="min-h-screen bg-gray-50 p-6">
-      {/* Header */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between">
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Admin Dashboard</h1>
-            <p className="text-gray-600 mt-1">Customer Success FTE - Real-time Monitoring</p>
-          </div>
-          <div className="text-right">
-            <div className="flex items-center space-x-2 text-sm text-gray-500">
-              <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
-              <span>Live</span>
-            </div>
-            <p className="text-xs text-gray-400 mt-1">
-              Last updated: {lastUpdate.toLocaleTimeString()}
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="min-h-screen relative overflow-hidden bg-gradient-to-br from-blue-50 via-purple-50 to-pink-50 p-8">
+      <FloatingParticles />
 
-      {/* Metrics Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        {/* Active Conversations */}
-        <div className="bg-white rounded-lg shadow-md p-6">
+      <div className="max-w-7xl mx-auto relative z-10">
+        {/* Header */}
+        <motion.div
+          initial={{ opacity: 0, y: -20 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="mb-8"
+        >
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm font-medium text-gray-600">Active Conversations</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{metrics.activeConversations}</p>
+              <motion.h1
+                initial={{ opacity: 0, x: -20 }}
+                animate={{ opacity: 1, x: 0 }}
+                className="text-4xl font-bold bg-gradient-to-r from-blue-600 via-purple-600 to-pink-600 bg-clip-text text-transparent"
+              >
+                Admin Dashboard
+              </motion.h1>
+              <motion.p
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                transition={{ delay: 0.2 }}
+                className="text-gray-600 mt-2"
+              >
+                Customer Success FTE - Real-time Monitoring
+              </motion.p>
             </div>
-            <div className="w-12 h-12 bg-blue-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Total Tickets */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Total Tickets</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{metrics.totalTickets}</p>
-            </div>
-            <div className="w-12 h-12 bg-green-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* Avg Response Time */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">Avg Response Time</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">{metrics.avgResponseTime}s</p>
-            </div>
-            <div className="w-12 h-12 bg-purple-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-
-        {/* AI Success Rate */}
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <div className="flex items-center justify-between">
-            <div>
-              <p className="text-sm font-medium text-gray-600">AI Success Rate</p>
-              <p className="text-3xl font-bold text-gray-900 mt-2">98%</p>
-            </div>
-            <div className="w-12 h-12 bg-yellow-100 rounded-full flex items-center justify-center">
-              <svg className="w-6 h-6 text-yellow-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-              </svg>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Channel Breakdown */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-        <div className="bg-white rounded-lg shadow-md p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Channel Breakdown</h3>
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl">📧</span>
-                <span className="text-gray-700">Email</span>
+            <motion.div
+              initial={{ opacity: 0, x: 20 }}
+              animate={{ opacity: 1, x: 0 }}
+              className="text-right"
+            >
+              <div className="flex items-center space-x-2 text-sm font-semibold">
+                <motion.div
+                  className="w-3 h-3 bg-green-500 rounded-full"
+                  animate={{ scale: [1, 1.2, 1], opacity: [1, 0.5, 1] }}
+                  transition={{ duration: 2, repeat: Infinity }}
+                />
+                <span className="text-green-600">Live</span>
               </div>
-              <span className="text-xl font-bold text-gray-900">{metrics.channelBreakdown.email}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl">💬</span>
-                <span className="text-gray-700">WhatsApp</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">{metrics.channelBreakdown.whatsapp}</span>
-            </div>
-            <div className="flex items-center justify-between">
-              <div className="flex items-center space-x-2">
-                <span className="text-2xl">🌐</span>
-                <span className="text-gray-700">Web Form</span>
-              </div>
-              <span className="text-xl font-bold text-gray-900">{metrics.channelBreakdown.web_form}</span>
-            </div>
+              <p className="text-xs text-gray-500 mt-1">
+                Updated: {lastUpdate.toLocaleTimeString()}
+              </p>
+            </motion.div>
           </div>
+        </motion.div>
+
+        {/* Metrics Cards */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+          {metricCards.map((card, index) => (
+            <motion.div
+              key={card.title}
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ delay: 0.1 * index }}
+              whileHover={{ scale: 1.05, y: -5 }}
+              className="relative group"
+            >
+              <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-2xl" />
+              <div className={`relative bg-gradient-to-br ${card.bgGradient} rounded-2xl p-6 border border-white/20 shadow-xl group-hover:shadow-2xl transition-all`}>
+                <div className="flex items-center justify-between mb-4">
+                  <motion.div
+                    className={`w-14 h-14 bg-gradient-to-r ${card.gradient} rounded-xl flex items-center justify-center shadow-lg`}
+                    whileHover={{ rotate: [0, -10, 10, 0] }}
+                    transition={{ duration: 0.5 }}
+                  >
+                    <span className="text-2xl">{card.icon}</span>
+                  </motion.div>
+                </div>
+                <p className="text-sm font-medium text-gray-600 mb-1">{card.title}</p>
+                <motion.p
+                  className="text-3xl font-bold text-gray-900"
+                  key={card.value}
+                  initial={{ scale: 1.2, opacity: 0 }}
+                  animate={{ scale: 1, opacity: 1 }}
+                  transition={{ type: "spring" }}
+                >
+                  {card.value}
+                </motion.p>
+              </div>
+            </motion.div>
+          ))}
         </div>
 
-        {/* Quick Stats */}
-        <div className="bg-white rounded-lg shadow-md p-6 lg:col-span-2">
-          <h3 className="text-lg font-semibold text-gray-900 mb-4">Performance Metrics</h3>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="border-l-4 border-blue-500 pl-4">
-              <p className="text-sm text-gray-600">Messages Today</p>
-              <p className="text-2xl font-bold text-gray-900">247</p>
+        {/* Channel Breakdown & Performance */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
+          {/* Channel Breakdown */}
+          <motion.div
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.5 }}
+            className="relative"
+          >
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-2xl" />
+            <div className="relative bg-white/60 rounded-2xl p-6 border border-white/20 shadow-xl">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">Channel Breakdown</h3>
+              <div className="space-y-4">
+                {[
+                  { channel: 'email', label: 'Email', count: metrics.channelBreakdown.email, color: 'from-blue-500 to-cyan-500' },
+                  { channel: 'whatsapp', label: 'WhatsApp', count: metrics.channelBreakdown.whatsapp, color: 'from-green-500 to-emerald-500' },
+                  { channel: 'web_form', label: 'Web Form', count: metrics.channelBreakdown.web_form, color: 'from-purple-500 to-pink-500' }
+                ].map((item, index) => (
+                  <motion.div
+                    key={item.channel}
+                    initial={{ opacity: 0, x: -20 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.6 + index * 0.1 }}
+                    whileHover={{ x: 5 }}
+                    className="flex items-center justify-between p-3 bg-white/50 rounded-xl border border-white/20"
+                  >
+                    <div className="flex items-center space-x-3">
+                      <span className="text-2xl">{getChannelIcon(item.channel)}</span>
+                      <span className="font-medium text-gray-700">{item.label}</span>
+                    </div>
+                    <motion.span
+                      className={`text-xl font-bold bg-gradient-to-r ${item.color} bg-clip-text text-transparent`}
+                      key={item.count}
+                      initial={{ scale: 1.3 }}
+                      animate={{ scale: 1 }}
+                    >
+                      {item.count}
+                    </motion.span>
+                  </motion.div>
+                ))}
+              </div>
             </div>
-            <div className="border-l-4 border-green-500 pl-4">
-              <p className="text-sm text-gray-600">Resolved Today</p>
-              <p className="text-2xl font-bold text-gray-900">189</p>
-            </div>
-            <div className="border-l-4 border-purple-500 pl-4">
-              <p className="text-sm text-gray-600">Escalations</p>
-              <p className="text-2xl font-bold text-gray-900">3</p>
-            </div>
-            <div className="border-l-4 border-yellow-500 pl-4">
-              <p className="text-sm text-gray-600">Satisfaction</p>
-              <p className="text-2xl font-bold text-gray-900">4.8/5</p>
-            </div>
-          </div>
-        </div>
-      </div>
+          </motion.div>
 
-      {/* Recent Tickets */}
-      <div className="bg-white rounded-lg shadow-md p-6">
-        <h3 className="text-lg font-semibold text-gray-900 mb-4">Recent Tickets</h3>
-        <div className="overflow-x-auto">
-          <table className="min-w-full divide-y divide-gray-200">
-            <thead className="bg-gray-50">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Ticket ID
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Channel
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Customer
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Subject
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Status
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Created
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              {recentTickets.length === 0 ? (
-                <tr>
-                  <td colSpan="6" className="px-6 py-4 text-center text-gray-500">
-                    No tickets yet. Submit a support request to see it here!
-                  </td>
-                </tr>
-              ) : (
-                recentTickets.map((ticket) => (
-                  <tr key={ticket.id} className="hover:bg-gray-50">
-                    <td className="px-6 py-4 whitespace-nowrap text-sm font-mono text-gray-900">
-                      {ticket.id.substring(0, 8)}...
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm">
-                      <span className="text-xl">{getChannelIcon(ticket.channel)}</span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                      {ticket.customer_name || ticket.customer_email}
-                    </td>
-                    <td className="px-6 py-4 text-sm text-gray-900 max-w-xs truncate">
-                      {ticket.subject}
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap">
-                      <span className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusColor(ticket.status)}`}>
-                        {ticket.status}
-                      </span>
-                    </td>
-                    <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                      {new Date(ticket.created_at).toLocaleString()}
-                    </td>
+          {/* Performance Metrics */}
+          <motion.div
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.6 }}
+            className="lg:col-span-2 relative"
+          >
+            <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-2xl" />
+            <div className="relative bg-white/60 rounded-2xl p-6 border border-white/20 shadow-xl">
+              <h3 className="text-lg font-bold text-gray-900 mb-6">Performance Metrics</h3>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: 'Messages Today', value: '247', color: 'blue' },
+                  { label: 'Resolved Today', value: '189', color: 'green' },
+                  { label: 'Escalations', value: '3', color: 'purple' },
+                  { label: 'Satisfaction', value: '4.8/5', color: 'yellow' }
+                ].map((metric, index) => (
+                  <motion.div
+                    key={metric.label}
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ delay: 0.7 + index * 0.1 }}
+                    whileHover={{ scale: 1.05 }}
+                    className={`border-l-4 border-${metric.color}-500 pl-4 p-3 bg-white/50 rounded-r-xl`}
+                  >
+                    <p className="text-sm text-gray-600 mb-1">{metric.label}</p>
+                    <motion.p
+                      className="text-2xl font-bold text-gray-900"
+                      key={metric.value}
+                      initial={{ y: 10, opacity: 0 }}
+                      animate={{ y: 0, opacity: 1 }}
+                    >
+                      {metric.value}
+                    </motion.p>
+                  </motion.div>
+                ))}
+              </div>
+            </div>
+          </motion.div>
+        </div>
+
+        {/* Recent Tickets */}
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.8 }}
+          className="relative"
+        >
+          <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-2xl" />
+          <div className="relative bg-white/60 rounded-2xl p-6 border border-white/20 shadow-xl">
+            <h3 className="text-lg font-bold text-gray-900 mb-6">Recent Tickets</h3>
+            <div className="overflow-x-auto">
+              <table className="min-w-full">
+                <thead>
+                  <tr className="border-b border-gray-200">
+                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Ticket ID</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Channel</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Customer</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Subject</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Status</th>
+                    <th className="px-4 py-3 text-left text-xs font-bold text-gray-600 uppercase">Created</th>
                   </tr>
-                ))
-              )}
-            </tbody>
-          </table>
-        </div>
+                </thead>
+                <tbody>
+                  <AnimatePresence>
+                    {recentTickets.length === 0 ? (
+                      <tr>
+                        <td colSpan="6" className="px-4 py-8 text-center text-gray-500">
+                          No tickets yet. Submit a support request to see it here!
+                        </td>
+                      </tr>
+                    ) : (
+                      recentTickets.map((ticket, index) => (
+                        <motion.tr
+                          key={ticket.id}
+                          initial={{ opacity: 0, x: -20 }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ delay: 0.9 + index * 0.05 }}
+                          whileHover={{ backgroundColor: 'rgba(255,255,255,0.5)', scale: 1.01 }}
+                          className="border-b border-gray-100"
+                        >
+                          <td className="px-4 py-4 text-sm font-mono text-gray-900">
+                            {ticket.id.substring(0, 8)}...
+                          </td>
+                          <td className="px-4 py-4">
+                            <motion.span
+                              className="text-2xl"
+                              whileHover={{ scale: 1.3, rotate: 10 }}
+                            >
+                              {getChannelIcon(ticket.channel)}
+                            </motion.span>
+                          </td>
+                          <td className="px-4 py-4 text-sm text-gray-900">
+                            {ticket.customer_name || ticket.customer_email}
+                          </td>
+                          <td className="px-4 py-4 text-sm text-gray-900 max-w-xs truncate">
+                            {ticket.subject}
+                          </td>
+                          <td className="px-4 py-4">
+                            <span className={`px-3 py-1 text-xs font-semibold rounded-full border ${getStatusColor(ticket.status)}`}>
+                              {ticket.status}
+                            </span>
+                          </td>
+                          <td className="px-4 py-4 text-sm text-gray-500">
+                            {new Date(ticket.created_at).toLocaleString()}
+                          </td>
+                        </motion.tr>
+                      ))
+                    )}
+                  </AnimatePresence>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </motion.div>
       </div>
     </div>
   );

@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
-export default function CustomerPortal({ apiEndpoint = 'https://fte-backend-3ohm.onrender.com' }) {
+export default function CustomerPortal({ apiEndpoint = 'https://fte-backend-3ohm.onrender.com', onBack }) {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [loginMethod, setLoginMethod] = useState('email'); // 'email' or 'phone'
   const [loginData, setLoginData] = useState({ email: '', phone: '' });
