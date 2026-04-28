@@ -28,6 +28,9 @@ from agent.openai_agent import get_agent
 # Import Kafka client
 from kafka_client import FTEKafkaProducer, TOPICS
 
+# Import security middleware
+from api.middleware import RateLimitMiddleware, SecurityHeadersMiddleware, RequestLoggingMiddleware
+
 # Initialize WhatsApp handler
 try:
     whatsapp_handler = WhatsAppHandler()
@@ -56,9 +59,48 @@ kafka_producer = FTEKafkaProducer()
 
 app = FastAPI(
     title="Customer Success FTE API",
-    description="24/7 AI-powered customer support across Email, WhatsApp, and Web",
-    version="1.0.0"
+    description="""
+    ## 24/7 AI-Powered Multi-Channel Customer Support System
+
+    ### Features:
+    - 🤖 **AI-Powered Responses**: Google Gemini 1.5 Pro for intelligent support
+    - 📧 **Email Support**: Gmail API integration with auto-responses
+    - 💬 **WhatsApp Support**: Twilio integration for messaging
+    - 🌐 **Web Form**: Real-time chat with WebSocket support
+    - 🎤 **Voice Support**: Speech recognition in 10+ languages
+    - 📊 **Analytics**: Real-time metrics and insights
+    - 🗄️ **PostgreSQL Database**: 8 tables with full CRM system
+    - ⚡ **Kafka Event Streaming**: Real-time event processing
+
+    ### Security:
+    - Rate limiting (60 requests/minute per IP)
+    - Security headers (XSS, CSRF protection)
+    - Input validation and sanitization
+    - CORS configuration
+
+    ### Endpoints:
+    - `/support/*` - Customer support operations
+    - `/admin/*` - Admin dashboard and metrics
+    - `/customer/*` - Customer portal operations
+    - `/chat/*` - Real-time chat operations
+    - `/webhooks/*` - External service webhooks
+    """,
+    version="1.0.0",
+    contact={
+        "name": "Customer Success FTE",
+        "url": "https://github.com/nahead/The-CRM-Digital-FTE-Factory-Final-Hackathon-5",
+    },
+    license_info={
+        "name": "MIT",
+    },
+    docs_url="/docs",
+    redoc_url="/redoc",
 )
+
+# Add security middleware
+app.add_middleware(SecurityHeadersMiddleware)
+app.add_middleware(RequestLoggingMiddleware)
+app.add_middleware(RateLimitMiddleware, requests_per_minute=60)
 
 # CORS for web form
 app.add_middleware(

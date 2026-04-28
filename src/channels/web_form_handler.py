@@ -23,6 +23,10 @@ sys.path.append(str(Path(__file__).parent.parent))
 from kafka_client import FTEKafkaProducer, TOPICS
 from agent.openai_agent import get_agent
 
+# Import input sanitizer
+sys.path.append(str(Path(__file__).parent.parent / 'api'))
+from sanitizer import sanitize_support_request
+
 # Initialize Kafka producer (singleton)
 _kafka_producer = None
 
@@ -195,12 +199,36 @@ async def submit_support_form(submission: SupportFormSubmission, background_task
     Handle support form submission.
 
     This endpoint:
-    1. Validates the submission
+    1. Validates and sanitizes the submission
     2. Creates a ticket in the system
     3. Publishes to Kafka for agent processing
     4. Returns confirmation to user
+
+    Security:
+    - Input sanitization to prevent XSS and SQL injection
+    - Email validation
+    - Length limits enforced
+    - Rate limiting applied
     """
     try:
+        # Sanitize all inputs
+        sanitized_data = sanitize_support_request({
+            "name": submission.name,
+            "email": submission.email,
+            "subject": submission.subject,
+            "message": submission.message,
+            "priority": submission.priority,
+            "category": submission.category
+        })
+
+        # Update submission with sanitized data
+        submission.name = sanitized_data["name"]
+        submission.email = sanitized_data["email"]
+        submission.subject = sanitized_data["subject"]
+        submission.message = sanitized_data["message"]
+        submission.priority = sanitized_data.get("priority", "medium")
+        submission.category = sanitized_data.get("category", "general")
+
         ticket_id = str(uuid.uuid4())
         print(f"Creating ticket {ticket_id} for {submission.email}")
 
