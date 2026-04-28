@@ -7,6 +7,113 @@ import CustomerPortal from './CustomerPortal';
 import AnalyticsDashboard from './AnalyticsDashboard';
 import VoiceEnabledChat from './VoiceEnabledChat';
 
+// Navigation Menu Component
+const NavigationMenu = ({ currentView, setCurrentView, ticketId }) => {
+  const [isOpen, setIsOpen] = useState(false);
+
+  const navItems = [
+    { id: 'home', icon: '🏠', label: 'Home', color: 'from-blue-500 to-cyan-500' },
+    { id: 'support', icon: '📝', label: 'Submit Request', color: 'from-blue-500 to-cyan-500' },
+    { id: 'portal', icon: '👤', label: 'Customer Portal', color: 'from-green-500 to-emerald-500' },
+    { id: 'voice', icon: '🎤', label: 'Voice Support', color: 'from-purple-500 to-pink-500' },
+    { id: 'chat', icon: '💬', label: 'Live Chat', color: 'from-indigo-500 to-blue-500', disabled: !ticketId },
+    { id: 'admin', icon: '📊', label: 'Admin Dashboard', color: 'from-red-500 to-orange-500' },
+    { id: 'analytics', icon: '📈', label: 'Analytics', color: 'from-yellow-500 to-amber-500' }
+  ];
+
+  return (
+    <>
+      {/* Floating Menu Button */}
+      <motion.button
+        initial={{ opacity: 0, scale: 0 }}
+        animate={{ opacity: 1, scale: 1 }}
+        transition={{ delay: 0.5 }}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.9 }}
+        onClick={() => setIsOpen(!isOpen)}
+        className="fixed bottom-8 right-8 z-50 w-16 h-16 bg-gradient-to-r from-blue-600 to-purple-600 rounded-full shadow-2xl flex items-center justify-center text-white text-2xl"
+      >
+        <motion.span
+          animate={{ rotate: isOpen ? 45 : 0 }}
+          transition={{ duration: 0.3 }}
+        >
+          {isOpen ? '✕' : '☰'}
+        </motion.span>
+      </motion.button>
+
+      {/* Navigation Menu */}
+      <AnimatePresence>
+        {isOpen && (
+          <>
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setIsOpen(false)}
+              className="fixed inset-0 bg-black/20 backdrop-blur-sm z-40"
+            />
+
+            {/* Menu Panel */}
+            <motion.div
+              initial={{ opacity: 0, x: 300 }}
+              animate={{ opacity: 1, x: 0 }}
+              exit={{ opacity: 0, x: 300 }}
+              transition={{ type: "spring", damping: 25 }}
+              className="fixed right-8 bottom-28 z-50 w-72"
+            >
+              <div className="absolute inset-0 bg-white/40 backdrop-blur-xl rounded-2xl" />
+              <div className="relative bg-white/80 rounded-2xl shadow-2xl border border-white/20 p-4">
+                <h3 className="text-lg font-bold bg-gradient-to-r from-blue-600 to-purple-600 bg-clip-text text-transparent mb-4">
+                  Navigation
+                </h3>
+                <div className="space-y-2">
+                  {navItems.map((item, index) => (
+                    <motion.button
+                      key={item.id}
+                      initial={{ opacity: 0, x: 20 }}
+                      animate={{ opacity: 1, x: 0 }}
+                      transition={{ delay: index * 0.05 }}
+                      whileHover={{ scale: item.disabled ? 1 : 1.03, x: item.disabled ? 0 : 5 }}
+                      whileTap={{ scale: item.disabled ? 1 : 0.98 }}
+                      onClick={() => {
+                        if (!item.disabled) {
+                          setCurrentView(item.id);
+                          setIsOpen(false);
+                        }
+                      }}
+                      disabled={item.disabled}
+                      className={`w-full flex items-center space-x-3 p-3 rounded-xl transition-all ${
+                        currentView === item.id
+                          ? `bg-gradient-to-r ${item.color} text-white shadow-lg`
+                          : item.disabled
+                          ? 'bg-gray-100 text-gray-400 cursor-not-allowed'
+                          : 'bg-white/50 hover:bg-white/80 text-gray-700'
+                      }`}
+                    >
+                      <span className="text-2xl">{item.icon}</span>
+                      <span className="text-sm font-semibold flex-1 text-left">{item.label}</span>
+                      {currentView === item.id && (
+                        <motion.span
+                          initial={{ scale: 0 }}
+                          animate={{ scale: 1 }}
+                          className="text-lg"
+                        >
+                          ✓
+                        </motion.span>
+                      )}
+                    </motion.button>
+                  ))}
+                </div>
+              </div>
+            </motion.div>
+          </>
+        )}
+      </AnimatePresence>
+    </>
+  );
+};
+
 // Floating particles background
 const FloatingParticles = () => {
   const particles = Array.from({ length: 30 }, (_, i) => ({
@@ -448,17 +555,26 @@ export default function App() {
   };
 
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={currentView}
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        exit={{ opacity: 0 }}
-        transition={{ duration: 0.3 }}
-        className="relative"
-      >
-        {renderView()}
-      </motion.div>
-    </AnimatePresence>
+    <>
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={currentView}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.3 }}
+          className="relative"
+        >
+          {renderView()}
+        </motion.div>
+      </AnimatePresence>
+
+      {/* Global Navigation Menu */}
+      <NavigationMenu
+        currentView={currentView}
+        setCurrentView={setCurrentView}
+        ticketId={ticketId}
+      />
+    </>
   );
 }
