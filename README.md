@@ -237,36 +237,60 @@ Hackathon-5/
 
 ## 🧪 Testing
 
-### Run E2E Tests
+### Comprehensive Test Suite (NEW)
+
+**E2E Tests:** `tests/test_e2e_multichannel.py`
 ```bash
-pytest tests/test_e2e.py -v
+# Install test dependencies
+pip install -r tests/requirements.txt
+
+# Run all E2E tests
+pytest tests/test_e2e_multichannel.py -v
+
+# Run with coverage
+pytest tests/test_e2e_multichannel.py --cov=src --cov-report=html
 ```
 
-### Test Scenarios Covered
-- ✅ 8 email scenarios (simple questions, angry customers, bugs, pricing)
-- ✅ 8 WhatsApp scenarios (quick questions, frustrated users, status checks)
-- ✅ 8 web form scenarios (support requests, high priority, billing)
-- ✅ 6 edge cases (empty messages, long messages, duplicates)
+**Load Tests:** `tests/load_test.py`
+```bash
+# Install Locust
+pip install locust
 
-**Total: 30+ test scenarios**
+# Run light load test (10 users, 5 minutes)
+locust -f tests/load_test.py --host=https://fte-backend-3ohm.onrender.com \
+       --users 10 --spawn-rate 2 --run-time 5m --headless
+
+# Run 24-hour continuous test
+locust -f tests/load_test.py --host=https://fte-backend-3ohm.onrender.com \
+       --users 50 --spawn-rate 5 --run-time 24h --headless
+```
+
+### Test Coverage
+- ✅ **Web Form:** Submission, validation, all categories/priorities
+- ✅ **Email:** Gmail webhook processing
+- ✅ **WhatsApp:** Twilio webhook processing
+- ✅ **Cross-Channel:** Customer continuity across channels
+- ✅ **Edge Cases:** Empty messages, long messages, special characters
+- ✅ **Performance:** Response time, concurrent submissions
+- ✅ **Load Testing:** Light, medium, heavy, and 24-hour scenarios
+
+**Total: 40+ test scenarios**
+
+See [tests/README.md](tests/README.md) for complete testing guide.
 
 ### Manual Testing
 ```bash
 # Test web form submission
-curl -X POST http://localhost:8001/support/submit \
+curl -X POST https://fte-backend-3ohm.onrender.com/support/submit \
   -H "Content-Type: application/json" \
   -d '{
     "name": "Test User",
     "email": "test@example.com",
-    "subject": "Test",
-    "category": "Technical Support",
-    "priority": "Medium",
-    "message": "Testing the system"
+    "subject": "Test Support Request",
+    "category": "technical",
+    "priority": "medium",
+    "message": "Testing the system functionality"
   }'
-
-# Verify in database
-docker exec fte-postgres psql -U postgres -d fte_db -c \
-  "SELECT * FROM tickets ORDER BY created_at DESC LIMIT 1;"
 ```
 
 ---
