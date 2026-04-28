@@ -20,10 +20,10 @@ A complete enterprise-grade customer success platform that replaces human agents
 ## 🚀 Live Demo
 
 ### Try It Now:
-- **Frontend**: https://fte-frontend.onrender.com
-- **Backend API**: https://fte-backend-3ohm.onrender.com
-- **API Documentation**: https://fte-backend-3ohm.onrender.com/docs
-- **GitHub Repository**: https://github.com/nahead/The-CRM-Digital-FTE-Factory-Final-Hackathon-5
+- **Frontend Application**: https://the-crm-digital-fte-factory-final.onrender.com ✅ LIVE
+- **Backend API**: https://fte-backend-3ohm.onrender.com ✅ LIVE
+- **API Documentation**: https://fte-backend-3ohm.onrender.com/docs ✅ LIVE
+- **GitHub Repository**: https://github.com/nahead/The-CRM-Digital-FTE-Factory-Final-Hackathon-5 ✅ LIVE
 
 ### Quick Test:
 ```bash

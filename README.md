@@ -82,6 +82,11 @@
 
 ## 🚀 Quick Start (5 minutes)
 
+### Live Demo (No Installation Required)
+- **Frontend**: https://the-crm-digital-fte-factory-final.onrender.com
+- **Backend API**: https://fte-backend-3ohm.onrender.com
+- **API Docs**: https://fte-backend-3ohm.onrender.com/docs
+
 ### Prerequisites
 - Docker Desktop installed and running
 - Python 3.9+
